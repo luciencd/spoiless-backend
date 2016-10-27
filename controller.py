@@ -41,29 +41,29 @@ CORS(app)
 port = int(os.getenv('VCAP_APP_PORT', 8080))
 
 def getConnection():
-    return 
+    return
 def checkAPIkey():
     return True
 
 @app.route('/getShows',methods=['GET','POST'])
 def getShows():
-    sql_query = "SELECT id,name,year FROM shows;"
+    sql_query = "SELECT seriesid,seriesName FROM shows;"
     print "1"
     cursor.execute(sql_query)
     print "2"
 
     json_result = {"Shows":[]}
     print "3"
-    
+
     result = cursor.fetchall()
     print "4"
     for row in result:
-        json_result["Shows"].append({"id":row["id"],"name":row["name"],"year":row["year"]})
+        json_result["Shows"].append(row)
 
     print "5"
     print json_result
     return json.dumps(json_result)
-    
+
 @app.route('/addUserSpoiler',methods=['GET','POST'])
 def addUserSpoiler():
     user_id = request.args.get('user_id')
@@ -72,8 +72,8 @@ def addUserSpoiler():
     ##check key to make sure user is who he says he is.
     if(checkAPIkey(api_key)):
 
-        
-        
+
+
         return {"yes":"True"}
     else:
         ##not allowed action.
@@ -82,7 +82,7 @@ def addUserSpoiler():
                             "show_id":show_id,\
                             "user_id":user_id,\
                             "return":"Access Denied"}}
-    
+
 
     ##return well formed json to confirm addedge
 
