@@ -48,20 +48,15 @@ def checkAPIkey(api_key):
 @app.route('/getShows',methods=['GET','POST'])
 def getShows():
     sql_query = "SELECT seriesid,seriesName FROM shows;"
-    print "1"
+
     cursor.execute(sql_query)
-    print "2"
 
     json_result = {"Shows":[]}
-    print "3"
 
     result = cursor.fetchall()
-    print "4"
     for row in result:
         json_result["Shows"].append(row)
 
-    print "5"
-    print json_result
     connection.commit()
     return json.dumps(json_result)
 
@@ -69,7 +64,6 @@ def getShows():
 def createUser():
     #don't need a user_id
     #user_id = request.args.get('user_id')
-    print 1
     sql_query = "INSERT INTO users (id) VALUES (NULL);"
     cursor.execute(sql_query)
     sql_query = "SELECT LAST_INSERT_ID() AS user_id;"
@@ -118,31 +112,56 @@ def addUserSpoiler():
     ##return well formed json to confirm addedge
 
 @app.route('/removeUserSpoiler',methods=['GET','POST'])
-def removeUserSpoiler(user_id,api_key,show_id):
+def removeUserSpoiler():
+    user_id = request.args.get('user_id')
+    api_key = request.args.get('api_key')
+    series_id = request.args.get('series_id')
     ##check key to make sure user is who he says he is.
     if(checkAPIkey(api_key)):
 
+        sql_query = "DELETE * FROM userspoilers user_id=%s AND series_id=%s;",int(user_id),int(series_id)
+        sql_query = sql_query[0]%tuple(sql_query[1:])
+        print sql_query
+
+        ##If query returns wrong result, must return failure.
+        result = cursor.execute(sql_query)
+
+
+        json_result = {"Response":{"Type":"removeUserSpoiler","user_id":user_id,"series_id":series_id,"current":False,"return":"Access Granted"}}
 
         connection.commit()
-        return {"yes":"True"}
+        return json.dumps(json_result)
     else:
         ##not allowed action.
         return {"yes":"False"}
 @app.route('/hideUserSpoiler',methods=['GET','POST'])
-def hideUserSpoiler(user_id,api_key,show_id):
+def hideUserSpoiler():
+    user_id = request.args.get('user_id')
+    api_key = request.args.get('api_key')
+    series_id = request.args.get('series_id')
     ##check key to make sure user is who he says he is.
     if(checkAPIkey(api_key)):
-
+        sql_query = "UPDATE userspoilers SET current = 0 WHERE user_id=%s AND series_id=%s;",int(user_id),int(series_id)
+        sql_query = sql_query[0]%tuple(sql_query[1:])
+        print sql_query
+        result = cursor.execute(sql_query)
         connection.commit()
-        return {"yes":"True"}
+        return result
     else:
         ##not allowed action.
         return {"yes":"False"}
 
 @app.route('/showUserSpoiler',methods=['GET','POST'])
-def showUserSpoiler(user_id,api_key,show_id):
+def showUserSpoiler():
+    user_id = request.args.get('user_id')
+    api_key = request.args.get('api_key')
+    series_id = request.args.get('series_id')
     ##check key to make sure user is who he says he is.
     if(checkAPIkey(api_key)):
+        sql_query = "UPDATE userspoilers SET current = 1 WHERE user_id=%s AND series_id=%s;",int(user_id),int(series_id)
+        sql_query = sql_query[0]%tuple(sql_query[1:])
+        print sql_query
+        result = cursor.execute(sql_query)
 
         connection.commit()
         return {"yes":"True"}
@@ -151,11 +170,26 @@ def showUserSpoiler(user_id,api_key,show_id):
         return {"yes":"False"}
 
 @app.route('/getUserSpoilers',methods=['GET','POST'])
-def getUserSpoilers(user_id,api_key):
+def getUserSpoilers():
+    user_id = request.args.get('user_id')
+    api_key = request.args.get('api_key')
     if(checkAPIkey(api_key)):
+        sql_query = "SELECT * FROM userspoilers WHERE user_id = %s",int(user_id);
+        sql_query = sql_query[0]%tuple(sql_query[1:])
+        print sql_query
+        result = cursor.execute(sql_query)
+
+        result = cursor.fetchall()
+        json_result = {"Series":[],"user_id":user_id}#what if I want to return the name too? should i duplicate it in the table or something?
+        #should i just return ids to the controller, and then the controller can find the ids in the giant json list
+        #we sent originally?
+        for row in result:
+            json_result["Series"].append(row)
 
         connection.commit()
-        return {"yes":"True"}
+        print json_result
+        print "AAAAAAABBBBBBBB"
+        return json.dumps(json_result)
     else:
         ##not allowed action.
         return {"yes":"False"}
