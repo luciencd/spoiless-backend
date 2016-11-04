@@ -2,7 +2,9 @@
 To test out using Docker:
 
 $ git clone "https://github.com/luciencd/spoiless/"
+
 $ docker-compose build
+
 $ docker-compose up
 
 visit [localhost:5000](http://localhost:5000) in browser.
