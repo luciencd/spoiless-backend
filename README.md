@@ -1,4 +1,13 @@
 # spoiless-backend
+To test out using Docker:
+
+$ git clone "https://github.com/luciencd/spoiless/"
+$ docker-compose build
+$ docker-compose up
+
+visit [localhost:5000](http://localhost:5000) in browser.
+
+Try out commands like: [/getShows](http://localhost:5000/getShows) or [createUser](http://localhost:5000/createUser)
 
 This component of the spoiless project is in charge of maintaining a REST API that can respond to numerous calls from the front end.
 
