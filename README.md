@@ -9,7 +9,7 @@ $ docker-compose up
 
 visit [localhost:5000](http://localhost:5000) in browser.
 
-Try out commands like: [/getShows](http://localhost:5000/getShows) or [createUser](http://localhost:5000/createUser)
+Try out commands like: [/getShows](http://localhost:5000/getShows) or [/createUser](http://localhost:5000/createUser)
 
 This component of the spoiless project is in charge of maintaining a REST API that can respond to numerous calls from the front end.
 
