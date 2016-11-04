@@ -23,7 +23,7 @@ connection = pymysql.connect(host=credentials['hostname'],
                              cursorclass=pymysql.cursors.DictCursor)
 
 '''
-
+print "ass"
 connection = pymysql.connect(host="127.0.0.1",
                              user="root",
                              password="root",
@@ -38,13 +38,18 @@ cursor = connection.cursor()
 
 app = Flask(__name__)
 CORS(app)
-port = int(os.getenv('VCAP_APP_PORT', 8080))
+
+#apparently this will require environment variables?
+#port = int(os.getenv('VCAP_APP_PORT', 8080))
 
 def getConnection():
     return
 def checkAPIkey(api_key):
     return True
-
+@app.route('/')
+def hello():
+    return "hello"
+    
 @app.route('/getShows',methods=['GET','POST'])
 def getShows():
     sql_query = "SELECT seriesid,seriesName FROM shows;"
@@ -188,7 +193,6 @@ def getUserSpoilers():
 
         connection.commit()
         print json_result
-        print "AAAAAAABBBBBBBB"
         return json.dumps(json_result)
     else:
         ##not allowed action.
@@ -196,4 +200,5 @@ def getUserSpoilers():
 
 if __name__ == '__main__':
     #analyzeTweets('yahoo',10000,"")
-    app.run(host='0.0.0.0', port=port)
+    app.run()
+    #app.run(host='0.0.0.0', port=port)
