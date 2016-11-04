@@ -24,14 +24,34 @@ connection = pymysql.connect(host=credentials['hostname'],
 
 '''
 print "ass"
-connection = pymysql.connect(host="127.0.0.1",
+
+connection = pymysql.connect(host="mysql",
                              user="root",
                              password="root",
-                             db="spoiless3",
+                             database= "spoiless",
                              charset='utf8mb4',
-                             port=8889,
+                             port=3306,
                              cursorclass=pymysql.cursors.DictCursor)
 cursor = connection.cursor()
+print "PYTHON STARTING UP ------$$$$66"
+###Create database?
+sqlSetupQuery = ""
+with open("databasedumps/spoiless_2016-11-01.sql", 'r') as inp:
+    for line in inp:
+        sqlSetupQuery = sqlSetupQuery + line
+inp.close()
+db = connection.cursor()
+
+db.execute(sqlSetupQuery)
+
+print "PYTHON READ FILE EXECUTED UP ------$$$$66"
+more = True
+while more:
+    print db.fetchall()
+    more = db.nextset()
+###
+connection.commit()
+print "PYTHON DATABASE COMMITTED UP ------$$$$66"
 ##here we accept changes to the user configurations via requests from the front end.
 
 ##use flask.
@@ -39,28 +59,31 @@ cursor = connection.cursor()
 app = Flask(__name__)
 CORS(app)
 
+
 #apparently this will require environment variables?
 #port = int(os.getenv('VCAP_APP_PORT', 8080))
 
-def getConnection():
-    return
+
 def checkAPIkey(api_key):
     return True
+
 @app.route('/')
 def hello():
     return "hello"
-    
+
+
+
 @app.route('/getShows',methods=['GET','POST'])
 def getShows():
-    sql_query = "SELECT seriesid,seriesName FROM shows;"
+    sql_query = "SELECT series_id,seriesName FROM series;"
 
     cursor.execute(sql_query)
 
-    json_result = {"Shows":[]}
+    json_result = {"Success":True,"guid":"randomnumber","Series":[]}
 
     result = cursor.fetchall()
     for row in result:
-        json_result["Shows"].append(row)
+        json_result["Series"].append(row)
 
     connection.commit()
     return json.dumps(json_result)
@@ -77,7 +100,7 @@ def createUser():
     result = cursor.fetchone()
     print result
 
-    json_result = {"id":result["user_id"]}
+    json_result = {"Success":True,"guid":"randomnumber","user_id":result["user_id"]}
 
     #getting the most recent auto_incremented value in users.
     #create user in sql database.
@@ -100,7 +123,7 @@ def addUserSpoiler():
         result = cursor.execute(sql_query)
 
 
-        json_result = {"Response":{"Type":"addUserSpoiler","user_id":user_id,"series_id":series_id,"current":True,"return":"Access Granted"}}
+        json_result = {"Success":True,"guid":"randomnumber"}#,"Response":{"user_id":user_id,"series_id":series_id,"current":True}}
 
         ##committing transaction
         connection.commit()
@@ -132,7 +155,7 @@ def removeUserSpoiler():
         result = cursor.execute(sql_query)
 
 
-        json_result = {"Response":{"Type":"removeUserSpoiler","user_id":user_id,"series_id":series_id,"current":False,"return":"Access Granted"}}
+        json_result = {"Success":True,"guid":"randomnumber"}#{"Response":{"Type":"removeUserSpoiler","user_id":user_id,"series_id":series_id,"current":False,"return":"Access Granted"}}
 
         connection.commit()
         return json.dumps(json_result)
@@ -151,10 +174,10 @@ def hideUserSpoiler():
         print sql_query
         result = cursor.execute(sql_query)
         connection.commit()
-        return result
+        return {"success":True,"guid":"randomnumber"}
     else:
         ##not allowed action.
-        return {"yes":"False"}
+        return {"success":False,"guid":"randomnumber"}
 
 @app.route('/showUserSpoiler',methods=['GET','POST'])
 def showUserSpoiler():
@@ -169,10 +192,10 @@ def showUserSpoiler():
         result = cursor.execute(sql_query)
 
         connection.commit()
-        return {"yes":"True"}
+        return {"success":True,"guid":"randomnumber"}
     else:
         ##not allowed action.
-        return {"yes":"False"}
+        return {"success":False,"guid":"randomnumber"}
 
 @app.route('/getUserSpoilers',methods=['GET','POST'])
 def getUserSpoilers():
@@ -185,7 +208,7 @@ def getUserSpoilers():
         result = cursor.execute(sql_query)
 
         result = cursor.fetchall()
-        json_result = {"Series":[],"user_id":user_id}#what if I want to return the name too? should i duplicate it in the table or something?
+        json_result = {"Success":True,"Series":[]}#what if I want to return the name too? should i duplicate it in the table or something?
         #should i just return ids to the controller, and then the controller can find the ids in the giant json list
         #we sent originally?
         for row in result:
@@ -196,9 +219,29 @@ def getUserSpoilers():
         return json.dumps(json_result)
     else:
         ##not allowed action.
-        return {"yes":"False"}
+        return {"success":False,"guid":"randomnumber"}
+
+
 
 if __name__ == '__main__':
-    #analyzeTweets('yahoo',10000,"")
+    print "PYTHON STARTING UP ------$$$$66"
+    ###Create database?
+    sqlSetupQuery = ""
+    with open("databasedumps/spoiless_2016-11-01.sql", 'r') as inp:
+        for line in inp:
+            sqlQuery = sqlQuery + line
+    inp.close()
+    db = conn.cursor()
+
+    db.execute(sqlSetupQuery)
+
+    print "PYTHON READ FILE EXECUTED UP ------$$$$66"
+    more = True
+    while more:
+        print db.fetchall()
+        more = db.nextset()
+    ###
+    db.commit()
+    print "PYTHON DATABASE COMMITTED UP ------$$$$66"
     app.run()
     #app.run(host='0.0.0.0', port=port)

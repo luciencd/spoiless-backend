@@ -8,7 +8,6 @@ RUN pip install flask_cors
 RUN pip install pymysql
 RUN pip install requests
 RUN pip install networkx
-RUN pip install re
 
 # Add code
 ADD . /opt/spoiless/spoilessbackend
