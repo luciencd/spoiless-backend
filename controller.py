@@ -23,7 +23,7 @@ connection = pymysql.connect(host=credentials['hostname'],
                              cursorclass=pymysql.cursors.DictCursor)
 
 '''
-print "ass"
+
 
 connection = pymysql.connect(host="mysql",
                              user="root",
@@ -224,24 +224,6 @@ def getUserSpoilers():
 
 
 if __name__ == '__main__':
-    print "PYTHON STARTING UP ------$$$$66"
-    ###Create database?
-    sqlSetupQuery = ""
-    with open("databasedumps/spoiless_2016-11-01.sql", 'r') as inp:
-        for line in inp:
-            sqlQuery = sqlQuery + line
-    inp.close()
-    db = conn.cursor()
 
-    db.execute(sqlSetupQuery)
-
-    print "PYTHON READ FILE EXECUTED UP ------$$$$66"
-    more = True
-    while more:
-        print db.fetchall()
-        more = db.nextset()
-    ###
-    db.commit()
-    print "PYTHON DATABASE COMMITTED UP ------$$$$66"
     app.run()
     #app.run(host='0.0.0.0', port=port)
