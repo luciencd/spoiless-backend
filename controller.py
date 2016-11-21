@@ -112,6 +112,8 @@ def addUserSpoiler():
     user_id = request.args.get('user_id')
     api_key = request.args.get('api_key')
     series_id = request.args.get('series_id')
+    print user_id,api_key,series_id
+
     ##check key to make sure user is who he says he is.
     if(checkAPIkey(api_key)):
         ##parametrising the API data
@@ -130,11 +132,13 @@ def addUserSpoiler():
         return json.dumps(json_result)
     else:
         ##not allowed action.
-        return {"Response":{"Type":"add",\
+        json_result =  {"Response":{"Type":"add",\
                             "Asset":"series",\
+                            "api_key":api_key,\
                             "series_id":series_id,\
                             "user_id":user_id,\
                             "return":"Access Denied"}}
+        return json.dumps(json_result)
 
 
     ##return well formed json to confirm addedge
@@ -202,7 +206,7 @@ def getUserSpoilers():
     user_id = request.args.get('user_id')
     api_key = request.args.get('api_key')
     if(checkAPIkey(api_key)):
-        sql_query = "SELECT * FROM userspoilers WHERE user_id = %s",int(user_id);
+        sql_query = "SELECT series_id,seriesName FROM userspoilers NATURAL JOIN series WHERE user_id = %s",int(user_id);
         sql_query = sql_query[0]%tuple(sql_query[1:])
         print sql_query
         result = cursor.execute(sql_query)
