@@ -151,7 +151,7 @@ def removeUserSpoiler():
     ##check key to make sure user is who he says he is.
     if(checkAPIkey(api_key)):
 
-        sql_query = "DELETE * FROM userspoilers user_id=%s AND series_id=%s;",int(user_id),int(series_id)
+        sql_query = "DELETE FROM userspoilers WHERE user_id=%s AND series_id=%s;",int(user_id),int(series_id)
         sql_query = sql_query[0]%tuple(sql_query[1:])
         print sql_query
 
